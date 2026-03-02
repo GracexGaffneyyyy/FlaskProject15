@@ -6,26 +6,22 @@ app = Flask(__name__)
 # -----------------------
 # HARD-CODED CONFIG (DEMO ONLY)
 # -----------------------
-API_KEY = "hKT8XfnxESwFxDGgpvANmivKuKZROrIH0SkqFetq"  # Add your OpenWeatherMap API key here
-Astronaut = "Neil Armstrong"
-NASA_URL = "https://api.nasa.gov/"
+API_KEY = "live_nd5ftUYkwJRLVWcOyHHUAK9tzvrqCTqi5APyWJBCIti0jxtwEa6Q06uBcv5twr7P"
+ANIMAL = "Cat"
+CAT_URL = "https://api.thecatapi.com/v1/images/search"
 
 
 @app.route("/")
 def index():
-    return {"message": "Nasa API running"}
+    return {"message": "Cat API running"}
 
 
-@app.route("/nasa")
-def nasa():
+@app.route("/cat")
+def cat():
     try:
         r = requests.get(
-            NASA_URL,
-            params={
-                "q": astronaut,
-                "appid": API_KEY,
-                "units": "metric",
-            },
+            CAT_URL,
+            headers={"x-api-key": API_KEY},
             timeout=5,
         )
 
@@ -34,19 +30,18 @@ def nasa():
         # Handle API-level errors
         if r.status_code != 200:
             return jsonify({
-                "error": "NASA API error",
+                "error": "Cat API error",
                 "api_response": data,
             }), 502
 
         return jsonify({
-            "city": Astronaut,
-            "temperature": data["main"]["temp"],
-            "conditions": data["weather"][0]["description"],
+            "animal": ANIMAL,
+            "image_url": data[0]["url"]
         })
 
     except requests.RequestException as e:
         return jsonify({
-            "error": "Failed to contact weather service",
+            "error": "Failed to contact Cat API service",
             "details": str(e),
         }), 503
 
