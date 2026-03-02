@@ -6,23 +6,23 @@ app = Flask(__name__)
 # -----------------------
 # HARD-CODED CONFIG (DEMO ONLY)
 # -----------------------
-API_KEY = "4df0c393a71deaa05042d1d6888e0d2f"  # Add your OpenWeatherMap API key here
-CITY = "Cork"
-WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
+API_KEY = "live_nd5ftUYkwJRLVWcOyHHUAK9tzvrqCTqi5APyWJBCIti0jxtwEa6Q06uBcv5twr7P"
+ANIMAL = "Cat"
+CAT_URL = "https://api.thecatapi.com/v1/images/search"
 
 
 @app.route("/")
 def index():
-    return {"message": "Weather API running"}
+    return {"message": "Cat API running"}
 
 
-@app.route("/weather")
+@app.route("/cat")
 def weather():
     try:
         r = requests.get(
-            WEATHER_URL,
+            CAT_URL,
             params={
-                "q": CITY,
+                "q": ANIMAL,
                 "appid": API_KEY,
                 "units": "metric",
             },
@@ -34,12 +34,12 @@ def weather():
         # Handle API-level errors
         if r.status_code != 200:
             return jsonify({
-                "error": "Weather API error",
+                "error": "Cat API error",
                 "api_response": data,
             }), 502
 
         return jsonify({
-            "city": CITY,
+            "city": ANIMAL,
             "temperature": data["main"]["temp"],
             "conditions": data["weather"][0]["description"],
         })
