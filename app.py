@@ -6,23 +6,23 @@ app = Flask(__name__)
 # -----------------------
 # HARD-CODED CONFIG (DEMO ONLY)
 # -----------------------
-API_KEY = "4df0c393a71deaa05042d1d6888e0d2f"  # Add your OpenWeatherMap API key here
-CITY = "Cork"
-WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
+API_KEY = "hKT8XfnxESwFxDGgpvANmivKuKZROrIH0SkqFetq"  # Add your OpenWeatherMap API key here
+Astronaut = "Neil Armstrong"
+WEATHER_URL = "https://api.nasa.gov/"
 
 
 @app.route("/")
 def index():
-    return {"message": "Weather API running"}
+    return {"message": "Nasa API running"}
 
 
-@app.route("/weather")
-def weather():
+@app.route("/nasa")
+def nasa():
     try:
         r = requests.get(
-            WEATHER_URL,
+            NASA_URL,
             params={
-                "q": CITY,
+                "q": astronaut,
                 "appid": API_KEY,
                 "units": "metric",
             },
@@ -34,12 +34,12 @@ def weather():
         # Handle API-level errors
         if r.status_code != 200:
             return jsonify({
-                "error": "Weather API error",
+                "error": "NASA API error",
                 "api_response": data,
             }), 502
 
         return jsonify({
-            "city": CITY,
+            "city": Astronaut,
             "temperature": data["main"]["temp"],
             "conditions": data["weather"][0]["description"],
         })
