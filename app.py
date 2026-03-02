@@ -8,7 +8,7 @@ app = Flask(__name__)
 # -----------------------
 API_KEY = "hKT8XfnxESwFxDGgpvANmivKuKZROrIH0SkqFetq"  # Add your OpenWeatherMap API key here
 Astronaut = "Neil Armstrong"
-WEATHER_URL = "https://api.nasa.gov/"
+NASA_URL = "https://api.nasa.gov/"
 
 
 @app.route("/")
