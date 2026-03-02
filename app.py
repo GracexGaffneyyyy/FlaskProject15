@@ -17,15 +17,11 @@ def index():
 
 
 @app.route("/cat")
-def weather():
+def cat():
     try:
         r = requests.get(
             CAT_URL,
-            params={
-                "q": ANIMAL,
-                "appid": API_KEY,
-                "units": "metric",
-            },
+            headers={"x-api-key": API_KEY},
             timeout=5,
         )
 
@@ -39,14 +35,13 @@ def weather():
             }), 502
 
         return jsonify({
-            "city": ANIMAL,
-            "temperature": data["main"]["temp"],
-            "conditions": data["weather"][0]["description"],
+            "animal": ANIMAL,
+            "image_url": data[0]["url"]
         })
 
     except requests.RequestException as e:
         return jsonify({
-            "error": "Failed to contact weather service",
+            "error": "Failed to contact Cat API service",
             "details": str(e),
         }), 503
 
