@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -14,11 +14,63 @@ CAT_URL = "https://api.thecatapi.com/v1/images/search"
 
 @app.route("/")
 def index():
+    return render_template("index.html")
     return jsonify({"message": "Cat API running"})
 
 
 @app.route("/cat")
 def cat():
+    if not API_KEY:
+        return render_template(
+            "cat.html",
+            error="CAT_API_KEY is not configured",
+            image_url=None,
+            animal=ANIMAL
+        ), 500
+
+    try:
+        r = requests.get(
+            CAT_URL,
+            headers={"x-api-key": API_KEY},
+            timeout=5,
+        )
+
+        data = r.json()
+
+        if r.status_code != 200:
+            return render_template(
+                "cat.html",
+                error="Cat API error",
+                image_url=None,
+                animal=ANIMAL
+            ), 502
+
+        if not isinstance(data, list) or not data or "url" not in data[0]:
+            return render_template(
+                "cat.html",
+                error="Unexpected Cat API response",
+                image_url=None,
+                animal=ANIMAL
+            ), 502
+
+        return render_template(
+            "cat.html",
+            animal=ANIMAL,
+            image_url=data[0]["url"],
+            error=None
+        )
+
+    except requests.RequestException as e:
+        return render_template(
+            "cat.html",
+            error=f"Failed to contact Cat API service: {str(e)}",
+            image_url=None,
+            animal=ANIMAL
+        ), 503
+
+
+@app.route("/api/cat")
+def api_cat():
     if not API_KEY:
         return jsonify({"error": "CAT_API_KEY is not configured"}), 500
 
@@ -59,6 +111,15 @@ def cat():
 def health():
     return jsonify({"status": "OK"})
 
+
+@app.route("/ready")
+def ready():
+    return jsonify({"status": "ready"}), 200
+
+
+@app.route("/status")
+def status():
+    uptime = round(time.time() - START_TIME, 2)
 
 @app.route("/ready")
 def ready():
