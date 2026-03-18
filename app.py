@@ -15,6 +15,7 @@ CAT_URL = "https://api.thecatapi.com/v1/images/search"
 @app.route("/")
 def index():
     return render_template("index.html")
+    return jsonify({"message": "Cat API running"})
 
 
 @app.route("/cat")
@@ -113,6 +114,16 @@ def health():
 
 @app.route("/ready")
 def ready():
+    return jsonify({"status": "ready"}), 200
+
+
+@app.route("/status")
+def status():
+    uptime = round(time.time() - START_TIME, 2)
+
+@app.route("/ready")
+def ready():
+    # Replace with real DB check if needed
     return jsonify({"status": "ready"}), 200
 
 
