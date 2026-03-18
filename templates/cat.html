@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>🐱 Your Cat</h1>
+
+    {% if image_url %}
+        <img src="{{ image_url }}" width="400">
+    {% else %}
+        <p>Error loading cat</p>
+    {% endif %}
+
+    <br><br>
+
+    <a href="/cat"><button>Another Cat</button></a>
+    <a href="/"><button>Home</button></a>
+
+</body>
+</html>
