@@ -111,20 +111,15 @@ def api_cat():
 def health():
     return jsonify({"status": "OK"})
 
+@app.route("/saved")
+def saved():
+    return render_template("saved.html")
+
 
 @app.route("/ready")
 def ready():
     return jsonify({"status": "ready"}), 200
 
-
-@app.route("/status")
-def status():
-    uptime = round(time.time() - START_TIME, 2)
-
-@app.route("/ready")
-def ready():
-    # Replace with real DB check if needed
-    return jsonify({"status": "ready"}), 200
 
 
 @app.route("/status")
