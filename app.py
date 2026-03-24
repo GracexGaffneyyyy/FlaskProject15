@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect, url_for, request
 
 app = Flask(__name__)
 
@@ -11,11 +11,11 @@ API_KEY = os.environ.get("CAT_API_KEY")
 ANIMAL = "Cat"
 CAT_URL = "https://api.thecatapi.com/v1/images/search"
 
+saved_cats = []
 
 @app.route("/")
 def index():
     return render_template("index.html")
-    return jsonify({"message": "Cat API running"})
 
 
 @app.route("/cat")
@@ -67,6 +67,21 @@ def cat():
             image_url=None,
             animal=ANIMAL
         ), 503
+
+
+@app.route("/save_cat")
+def save_cat():
+    image_url = request.args.get("image_url")
+
+    if image_url and image_url not in saved_cats:
+        saved_cats.append(image_url)
+
+    return redirect(url_for("saved"))
+
+
+@app.route("/saved")
+def saved():
+    return render_template("saved.cat.html", saved_cats=saved_cats)
 
 
 @app.route("/api/cat")

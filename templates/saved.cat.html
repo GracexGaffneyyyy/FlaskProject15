@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saved Cats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .top-left {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .cat-gallery img {
+            margin: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-left">
+        <a href="/"><button>Home</button></a>
+    </div>
+
+    <h1>🐾 Saved Cats</h1>
+
+    {% if saved_cats %}
+        <div class="cat-gallery">
+            {% for cat in saved_cats %}
+                <img src="{{ cat }}" width="250">
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No cats saved yet.</p>
+    {% endif %}
+
+    <br>
+    <a href="/cat"><button>See Another Cat</button></a>
+
+</body>
+</html>

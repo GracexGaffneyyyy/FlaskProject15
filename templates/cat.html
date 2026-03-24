@@ -20,12 +20,19 @@
         <a href="/"><button>Home</button></a>
     </div>
 
+    <h1>🐱 Your Cat</h1>
     <h1>Your Cat</h1>
 
     {% if image_url %}
         <img src="{{ image_url }}" width="400">
+
+        <br><br>
+
+        <a href="{{ url_for('save_cat', image_url=image_url) }}">
+            <button>Save Cat</button>
+        </a>
     {% else %}
-        <p>Error loading cat</p>
+        <p>{{ error or "Error loading cat" }}</p>
     {% endif %}
 
     <br><br>
