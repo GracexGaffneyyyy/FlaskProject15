@@ -15,7 +15,7 @@ CAT_URL = "https://api.thecatapi.com/v1/images/search"
 @app.route("/")
 def index():
     return render_template("index.html")
-    return jsonify({"message": "Cat API running"})
+
 
 
 @app.route("/cat")
@@ -111,19 +111,12 @@ def api_cat():
 def health():
     return jsonify({"status": "OK"})
 
+@app.route("/saved")
+def saved():
+    return render_template("saved.html")
 
 @app.route("/ready")
 def ready():
-    return jsonify({"status": "ready"}), 200
-
-
-@app.route("/status")
-def status():
-    uptime = round(time.time() - START_TIME, 2)
-
-@app.route("/ready")
-def ready():
-    # Replace with real DB check if needed
     return jsonify({"status": "ready"}), 200
 
 
@@ -138,6 +131,7 @@ def status():
         "cat_api_configured": API_KEY is not None,
         "environment": os.environ.get("ENVIRONMENT", "development"),
     })
+
 
 
 if __name__ == "__main__":
