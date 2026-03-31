@@ -1,6 +1,5 @@
-flask
+Flask~=3.1.2
+gunicorn
 psycopg[binary]
-requests
 python-dotenv
 requests~=2.32.5
-Flask~=3.1.2
