@@ -28,7 +28,10 @@
     {% if saved_cats %}
         <div class="cat-gallery">
             {% for cat in saved_cats %}
-                <img src="{{ cat }}" width="250">
+                <div style="margin-bottom: 20px;">
+                    <img src="{{ cat.image_url }}" width="250" alt="Saved cat">
+                    <p>{{ cat.image_url }}</p>
+                </div>
             {% endfor %}
         </div>
     {% else %}
