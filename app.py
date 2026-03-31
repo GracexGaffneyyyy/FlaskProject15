@@ -126,9 +126,6 @@ def api_cat():
 def health():
     return jsonify({"status": "OK"})
 
-@app.route("/saved")
-def saved():
-    return render_template("saved.html")
 
 
 @app.route("/ready")
