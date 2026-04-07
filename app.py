@@ -2,16 +2,40 @@ import os
 import time
 import requests
 from flask import Flask, jsonify, render_template, redirect, url_for, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 app = Flask(__name__)
 
 START_TIME = time.time()
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DB_PATH = os.path.join(BASE_DIR, "cats.db")
+DB_URL = f"sqlite:///{DB_PATH}"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
 API_KEY = os.environ.get("CAT_API_KEY")
 ANIMAL = "Cat"
 CAT_URL = "https://api.thecatapi.com/v1/images/search"
 
-saved_cats = []
+
+class SavedCat(db.Model):
+    __tablename__ = "saved_cat"
+
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.Text, unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<SavedCat {self.image_url}>"
+
+
+with app.app_context():
+    db.create_all()
+
 
 @app.route("/")
 def index():
@@ -34,16 +58,9 @@ def cat():
             headers={"x-api-key": API_KEY},
             timeout=5,
         )
+        r.raise_for_status()
 
         data = r.json()
-
-        if r.status_code != 200:
-            return render_template(
-                "cat.html",
-                error="Cat API error",
-                image_url=None,
-                animal=ANIMAL
-            ), 502
 
         if not isinstance(data, list) or not data or "url" not in data[0]:
             return render_template(
@@ -73,15 +90,37 @@ def cat():
 def save_cat():
     image_url = request.args.get("image_url")
 
-    if image_url and image_url not in saved_cats:
-        saved_cats.append(image_url)
+    if not image_url:
+        return "Missing image_url", 400
 
-    return redirect(url_for("saved"))
+    try:
+        existing_cat = SavedCat.query.filter_by(image_url=image_url).first()
+
+        if not existing_cat:
+            new_cat = SavedCat(image_url=image_url)
+            db.session.add(new_cat)
+            db.session.commit()
+
+        return redirect(url_for("saved"))
+
+    except Exception as e:
+        db.session.rollback()
+        return f"Database error: {e}", 500
 
 
 @app.route("/saved")
 def saved():
+    saved_cats = SavedCat.query.order_by(SavedCat.id.desc()).all()
     return render_template("saved.cat.html", saved_cats=saved_cats)
+
+
+@app.route("/debug/saved_cats")
+def debug_saved_cats():
+    cats = SavedCat.query.order_by(SavedCat.id.desc()).all()
+    return jsonify([
+        {"id": cat.id, "image_url": cat.image_url}
+        for cat in cats
+    ])
 
 
 @app.route("/api/cat")
@@ -95,14 +134,9 @@ def api_cat():
             headers={"x-api-key": API_KEY},
             timeout=5,
         )
+        r.raise_for_status()
 
         data = r.json()
-
-        if r.status_code != 200:
-            return jsonify({
-                "error": "Cat API error",
-                "api_response": data,
-            }), 502
 
         if not isinstance(data, list) or not data or "url" not in data[0]:
             return jsonify({
@@ -132,15 +166,21 @@ def ready():
     return jsonify({"status": "ready"}), 200
 
 
-
 @app.route("/status")
 def status():
     uptime = round(time.time() - START_TIME, 2)
 
+    try:
+        db.session.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"disconnected: {e}"
+
     return jsonify({
         "service": "Cat API Service",
         "uptime_seconds": uptime,
-        "database": "not configured",
+        "database": db_status,
+        "database_path": DB_PATH,
         "cat_api_configured": API_KEY is not None,
         "environment": os.environ.get("ENVIRONMENT", "development"),
     })

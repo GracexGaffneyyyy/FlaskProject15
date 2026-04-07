@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
     <style>
-        /* Top-left home button */
         .top-left {
             position: absolute;
             top: 10px;
@@ -15,16 +14,14 @@
 </head>
 <body>
 
-    <!-- Home button (top-left) -->
     <div class="top-left">
         <a href="/"><button>Home</button></a>
     </div>
 
-    <h1>🐱 Your Cat</h1>
     <h1>Your Cat</h1>
 
     {% if image_url %}
-        <img src="{{ image_url }}" width="400">
+        <img src="{{ image_url }}" width="400" alt="Cat">
 
         <br><br>
 
@@ -38,8 +35,6 @@
     <br><br>
 
     <a href="/cat"><button>Another Cat</button></a>
-
-    <!-- New Saved Cats button -->
     <a href="/saved"><button>Saved Cats</button></a>
 
 </body>
